@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Collection Form</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; }
+        button { background-color: #0073b1; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        button:hover { background-color: #005582; }
+    </style>
+</head>
+<body>
+
+    <h2>Submit User Data</h2>
+    
+    <form action="http://localhost:3000/submit" method="POST">
+
+        <label for="li_fat_id">li_fat_id</label>
+        <input type="text" id="li_fat_id" name="li_fat_id" placeholder="LinkedIn First Party Cookie ID">
+
+        <label for="firstname">First Name</label>
+        <input type="text" id="firstname" name="firstname" required>
+
+        <label for="lastname">Last Name</label>
+        <input type="text" id="lastname" name="lastname" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="hashed_email">Hashed Email (SHA-256)</label>
+        <input type="text" id="hashed_email" name="hashed_email" placeholder="Optional if auto-generated">
+
+        <label for="jobtitle">Job Title</label>
+        <input type="text" id="jobtitle" name="jobtitle">
+
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company">
+
+        <label for="country">Country Code (ISO2)</label>
+        <input type="text" id="country" name="country" placeholder="e.g., US, AU, GB">
+
+        <label for="currency">Currency</label>
+        <input type="text" id="currency" name="currency" placeholder="e.g., USD">
+
+        <label for="value">Value</label>
+        <input type="number" step="0.01" id="value" name="value" placeholder="0.00">
+
+        <button type="submit">Submit Data</button>
+    </form>
+
+</body>
+</html>
