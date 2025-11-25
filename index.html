@@ -66,6 +66,8 @@
     
     <form id="capiDemoForm" name="capiDemoForm" action="https://formspree.io/f/xwpzgrrv" method="POST">
 
+        <input type="hidden" id="conversion_rule_id" value="">
+        
         <label for="li_fat_id">li_fat_id</label>
         <input type="text" id="li_fat_id" name="li_fat_id" placeholder="LinkedIn First Party Cookie ID">
 
@@ -99,6 +101,39 @@
         <button type="submit">Submit Data</button>
         <button type="reset" style="background-color: #666; margin-left: 10px;">Reset</button>
     </form>
+
+    <script>
+        document.getElementById('capiForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop page reload
+
+            // 1. Get Form Values
+            const formData = new FormData(e.target);
+            
+            // 2. Generate Dynamic Values
+            const timestamp = Date.now();
+            const eventId = 'evt_' + timestamp + '_' + Math.floor(Math.random() * 1000000);
+
+            // 3. Initialize Data Layer
+            window.dataLayer = window.dataLayer || [];
+
+            // 4. Push to Data Layer (Exact Mapping)
+            window.dataLayer.push({
+                
+                'conversion_happened_at': timestamp,
+                'conversion_rule_id': formData.get('conversion_rule_id'),
+                'currency': formData.get('currency'),
+                'event_id': eventId,
+                'value': formData.get('value'),
+                
+                'user_data': {
+                    'li_fat_id': formData.get('li_fat_id')
+                }
+            });
+
+            console.log("Data Layer Pushed:", window.dataLayer);
+            alert("Event pushed to Data Layer. Check Console.");
+        });
+    </script>
 
 </body>
 </html>
