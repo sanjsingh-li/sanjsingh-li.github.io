@@ -103,7 +103,7 @@
     </form>
 
     <script>
-        document.getElementById('capiForm').addEventListener('submit', function(e) {
+        document.getElementById('capiDemoForm').addEventListener('submit', function(e) {
             e.preventDefault(); // Stop page reload
 
             // 1. Get Form Values
@@ -120,7 +120,6 @@
             window.dataLayer.push({
                 
                 'conversion_happened_at - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': timestamp,
-                'conversion_rule_id - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': formData.get('conversion_rule_id'),
                 'currency - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': formData.get('currency'),
                 'event_id - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': eventId,
                 'value - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': formData.get('value'),
