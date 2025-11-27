@@ -130,7 +130,9 @@
             });
 
             console.log("Data Layer Pushed:", window.dataLayer);
-            e.target.submit();
+            setTimeout(function() {
+                e.target.submit();
+            }, 2000);
         });
     </script>
 
