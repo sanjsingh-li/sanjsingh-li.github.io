@@ -24,7 +24,7 @@
     <script>
         async function hashEmail(email) {
             const encoder = new TextEncoder();
-            const data = encoder.encode(email.toLowerCase());
+            const data = encoder.encode(email.trim().toLowerCase());
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -103,8 +103,9 @@
     </form>
 
     <script>
-        document.getElementById('capiDemoForm').addEventListener('submit', function(e) {
+        document.getElementById('capiDemoForm').addEventListener('submit', async function(e) {
             e.preventDefault(); // Stop page reload
+            await updateHashedEmail();               // hash the REAL email now
 
             // 1. Get Form Values
             const formData = new FormData(e.target);
