@@ -104,9 +104,14 @@
 
     <script>
         document.getElementById('capiDemoForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); // Stop page reload
-            await updateHashedEmail();               // hash the REAL email now
-
+            e.preventDefault();                     // Stop page reload
+            console.log('1) handler fired');
+            try {await updateHashedEmail();}               // hash the REAL email now
+            
+            catch (err) { console.error('2) HASH FAILED →', err); }
+            console.log('3) hashed_email field =', document.getElementById('hashed_email').value);
+            console.log('4) email =', formData.get('hashed_email'), '| li_fat_id =', formData.get('li_fat_id'));
+            
             // 1. Get Form Values
             const formData = new FormData(e.target);
             
