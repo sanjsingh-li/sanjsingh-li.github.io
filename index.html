@@ -51,7 +51,7 @@
 
     <h2>Submit User Data</h2>
 
-    <form id="capiDemoForm" name="capiDemoForm" action="https://formspree.io/f/xwpzgrrv" method="POST">
+    <form id="capiDemoForm" name="capiDemoForm">
         <input type="hidden" id="conversion_rule_id" value="">
 
         <label for="li_fat_id">li_fat_id</label>
@@ -129,9 +129,9 @@
             window.dataLayer.push(payload);
             console.log('Data Layer Pushed:', JSON.stringify(payload, null, 2));
 
-            // 4. Confirm, then submit the native form after tags have had time to fire
-            document.getElementById('message').textContent = 'Your Signup information has been submitted.';
-            setTimeout(function () { e.target.submit(); }, 2000);
+            // 4. Show confirmation only — no navigation. The form no longer posts anywhere,
+            //    so the dataLayer, console logs, and GTM tags all persist for inspection.
+            document.getElementById('message').textContent = 'Your lead info has been submitted.';
         });
     </script>
 
