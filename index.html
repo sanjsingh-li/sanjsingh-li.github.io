@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,6 @@
     })(window,document,'script','dataLayer','GTM-T72GCGQG');</script>
     <!-- End Google Tag Manager -->
 
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Collection Form</title>
@@ -19,55 +19,41 @@
         input { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; }
         button { background-color: #0073b1; color: white; padding: 10px 20px; border: none; cursor: pointer; }
         button:hover { background-color: #005582; }
+        #message { margin-top: 15px; font-weight: bold; color: #0073b1; }
     </style>
 
     <script>
+        // SHA-256 hex hash with LinkedIn normalization (trim + lowercase).
+        // NOTE: crypto.subtle only exists on a secure context (https:// or http://localhost).
         async function hashEmail(email) {
             const encoder = new TextEncoder();
             const data = encoder.encode(email.trim().toLowerCase());
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return Array.from(new Uint8Array(hashBuffer))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        async function updateHashedEmail() {
-            const emailInput = document.getElementById('email').value;
-            const hashedEmail = await hashEmail(emailInput);
-            document.getElementById('hashed_email').value = hashedEmail;
-        }
-
+        // Capture li_fat_id from the landing URL (?li_fat_id=...) on page load.
         function setLiFatId() {
-            const li_fat_id = (new URLSearchParams(window.location.search)).get("li_fat_id");
-            document.getElementById('li_fat_id').value = li_fat_id;
+            const liFatId = new URLSearchParams(window.location.search).get('li_fat_id');
+            if (liFatId) document.getElementById('li_fat_id').value = liFatId;
         }
 
-        function submitHandler(event) {
-            event.preventDefault();
-            document.getElementById('message').textContent = "Your Signup information has been submitted.";
-        }
-
-        window.onload = function() {
-            setLiFatId();
-            updateHashedEmail();
-        };
+        window.onload = setLiFatId;
     </script>
-
-    
 </head>
 <body>
 
-    
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T72GCGQG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <h2>Submit User Data</h2>
-    
-    <form id="capiDemoForm" name="capiDemoForm" action="https://formspree.io/f/xwpzgrrv" method="POST">
 
+    <form id="capiDemoForm" name="capiDemoForm" action="https://formspree.io/f/xwpzgrrv" method="POST">
         <input type="hidden" id="conversion_rule_id" value="">
-        
+
         <label for="li_fat_id">li_fat_id</label>
         <input type="text" id="li_fat_id" name="li_fat_id" placeholder="LinkedIn First Party Cookie ID">
 
@@ -81,7 +67,7 @@
         <input type="email" id="email" name="email" required>
 
         <label for="hashed_email">Hashed Email (SHA-256)</label>
-        <input type="text" id="hashed_email" name="hashed_email" placeholder="Optional if auto-generated">
+        <input type="text" id="hashed_email" name="hashed_email" placeholder="Auto-generated on submit">
 
         <label for="jobtitle">Job Title</label>
         <input type="text" id="jobtitle" name="jobtitle">
@@ -102,44 +88,50 @@
         <button type="reset" style="background-color: #666; margin-left: 10px;">Reset</button>
     </form>
 
+    <div id="message"></div>
+
     <script>
-        document.getElementById('capiDemoForm').addEventListener('submit', async function(e) {
-            e.preventDefault();                     // Stop page reload
-            console.log('1) handler fired');
-            try {await updateHashedEmail();}               // hash the REAL email now
-            
-            catch (err) { console.error('2) HASH FAILED →', err); }
-            console.log('3) hashed_email field =', document.getElementById('hashed_email').value);
-            console.log('4) email =', formData.get('hashed_email'), '| li_fat_id =', formData.get('li_fat_id'));
-            
-            // 1. Get Form Values
+        document.getElementById('capiDemoForm').addEventListener('submit', async function (e) {
+            e.preventDefault(); // Stop the native page reload
+
+            // 1. Normalize + hash the email. Guarded so a hash failure can NEVER block the push.
+            const emailRaw = document.getElementById('email').value.trim().toLowerCase();
+            let hashedEmail = '';
+            try {
+                if (window.crypto && crypto.subtle) {
+                    hashedEmail = await hashEmail(emailRaw);
+                    document.getElementById('hashed_email').value = hashedEmail;
+                } else {
+                    console.warn('crypto.subtle unavailable (insecure origin) — sending RAW email; hash it server-side.');
+                }
+            } catch (err) {
+                console.error('Email hashing failed:', err);
+            }
+
+            // 2. Read the form ONCE, AFTER hashing (declared before any use — no TDZ error)
             const formData = new FormData(e.target);
-            
-            // 2. Generate Dynamic Values
             const timestamp = Date.now();
             const eventId = 'evt_' + timestamp + '_' + Math.floor(Math.random() * 1000000);
 
-            // 3. Initialize Data Layer
+            // 3. Push to the data layer
             window.dataLayer = window.dataLayer || [];
-
-            // 4. Push to Data Layer (Exact Mapping)
-            window.dataLayer.push({
+            const payload = {
                 'event': 'linkedin_capi_submit',
                 'conversion_happened_at - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': timestamp,
                 'currency - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': formData.get('currency'),
                 'event_id - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': eventId,
                 'value - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': formData.get('value'),
-                
                 'user_data - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': {
                     'li_fat_id': formData.get('li_fat_id'),
-                    'email': formData.get('hashed_email')
+                    'email': hashedEmail || emailRaw   // hashed if available, else raw for server-side hashing
                 }
-            });
+            };
+            window.dataLayer.push(payload);
+            console.log('Data Layer Pushed:', JSON.stringify(payload, null, 2));
 
-            console.log("Data Layer Pushed:", window.dataLayer);
-            setTimeout(function() {
-                e.target.submit();
-            }, 2000);
+            // 4. Confirm, then submit the native form after tags have had time to fire
+            document.getElementById('message').textContent = 'Your Signup information has been submitted.';
+            setTimeout(function () { e.target.submit(); }, 2000);
         });
     </script>
 
