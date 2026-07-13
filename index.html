@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,15 +112,18 @@
             const timestamp = Date.now();
             const eventId = 'evt_' + timestamp + '_' + Math.floor(Math.random() * 1000000);
 
-            // 3. Push to the data layer
+            // 3. Push to the data layer.
+            //    Keys MUST match the "Data Layer Variable Name" each GTM DLV reads —
+            //    which are the SHORT keys (event_id, user_data, …), NOT the long display
+            //    names. Long keys → variables resolve undefined → GA4 drops the params.
             window.dataLayer = window.dataLayer || [];
             const payload = {
                 'event': 'linkedin_capi_submit',
-                'conversion_happened_at - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': timestamp,
-                'currency - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': formData.get('currency'),
-                'event_id - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': eventId,
-                'value - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': formData.get('value'),
-                'user_data - CAPI Sign up Conversion - Nov 25 2025 133715 24967209': {
+                'conversion_happened_at': timestamp,
+                'currency': formData.get('currency'),
+                'event_id': eventId,
+                'value': formData.get('value'),
+                'user_data': {
                     'li_fat_id': formData.get('li_fat_id'),
                     'email': hashedEmail || emailRaw   // hashed if available, else raw for server-side hashing
                 }
